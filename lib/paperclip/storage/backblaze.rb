@@ -39,17 +39,19 @@ module Paperclip
     # If you do it this way, then you don't need to put it in the model.
     #
     module Backblaze
-      def self.extended base
+      def self.extended(base)
         base.instance_eval do
           login
-          unless @options[:url].match(/\Ab2.*url\z/)
-            @options[:url] = ":b2_path_url".freeze
+          unless @options[:url] =~ /\Ab2.*url\z/
+            @options[:url] = ':b2_path_url'.freeze
           end
         end
 
-        Paperclip.interpolates(:b2_path_url) do |attachment, style|
-          "#{::Backblaze::B2.download_url}/file/#{attachment.b2_bucket_name}/#{attachment.path(style).sub(%r{\A/}, '')}"
-        end unless Paperclip::Interpolations.respond_to? :b2_path_url
+        unless Paperclip::Interpolations.respond_to? :b2_path_url
+          Paperclip.interpolates(:b2_path_url) do |attachment, style|
+            "#{::Backblaze::B2.download_url}/file/#{attachment.b2_bucket_name}/#{attachment.path(style).sub(%r{\A/}, '')}"
+          end
+        end
       end
 
       # Fetch the credentials from the config file, if it hasn't already been
@@ -95,7 +97,7 @@ module Paperclip
 
       # Return whether this attachment exists in the bucket.
       def exists?(style = default_style)
-        !!get_file(filename: get_path(style))
+        !get_file(filename: get_path(style)).nil?
       end
 
       # Return a Backblaze::B2::File object representing the file named in the
@@ -124,9 +126,8 @@ module Paperclip
       # (Internal) Used by Paperclip to remove remote files from storage.
       def flush_deletes
         @queued_for_delete.each do |path|
-          if file = get_file(filename: path.sub(%r{\A/}, ''))
-            file.destroy!
-          end
+          file = get_file(filename: path.sub(%r{\A/}, ''))
+          file.destroy! unless file.nil?
         end
         @queued_for_delete = []
       end
@@ -139,7 +140,6 @@ module Paperclip
           local_file.write(body)
         end
       end
-
     end # module Backblaze
   end # module Storage
 end # module Paperclip
