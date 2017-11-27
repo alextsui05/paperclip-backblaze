@@ -1,5 +1,7 @@
 # paperclip-backblaze
 
+[![Build Status](https://travis-ci.org/andrewshatnyy/paperclip-backblaze.svg?branch=master)](https://travis-ci.org/andrewshatnyy/paperclip-backblaze)
+
 The `paperclip-backblaze` provides a [Paperclip](https://github.com/thoughtbot/paperclip) storage adapter so that
 attachments can be saved to [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/docs/).
 It makes use of Winston Durand's [backblaze](https://github.com/R167/backblaze) gem

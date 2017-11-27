@@ -1,4 +1,3 @@
-require 'pry'
 require 'backblaze/b2/base'
 require 'backblaze/b2/bucket'
 require 'backblaze/b2/file'
