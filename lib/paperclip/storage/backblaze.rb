@@ -24,7 +24,7 @@ module Paperclip
     #   class Note < ApplicationRecord
     #     has_attached_file :image,
     #       storage: :backblaze,
-    #       b2_credentials: Rails.root.join('config/b2.yml'),
+    #       b2_credentials: YAML.safe_load(ERB.new(File.read("#{Rails.root}/config/back_blaze.yml")).result)[Rails.env],
     #     ...
     #
     # You can put the backblaze config in the environment config file e.g.:
@@ -33,7 +33,7 @@ module Paperclip
     #
     #   config.paperclip_defaults = {
     #     storage: :backblaze,
-    #     b2_credentials: Rails.root.join('config/b2.yml')
+    #     b2_credentials: [Hash]
     #   }
     #
     # If you do it this way, then you don't need to put it in the model.
@@ -54,25 +54,15 @@ module Paperclip
         end
       end
 
-      # Fetch the credentials from the config file, if it hasn't already been
-      # loaded.
-      #
-      # filename : String - path to the YAML config file containing the
-      # Backblaze B2 credentials. Here is example contents of what one
-      # may look like:
-      #
-      #   account_id: 123456789abc
-      #   application_key: 0123456789abcdef0123456789abcdef0123456789
-      #
+      # Reads b2_credentials from the config file
+      # must be a hash
+      #   {
+      #     account_id: 123456789abc
+      #     application_key: 0123456789abcdef0123456789abcdef0123456789
+      #   }
       # Returns a Hash containing the parsed credentials.
-      def b2_credentials(filename = @options[:b2_credentials])
-        unless @b2_credentials
-          require 'psych'
-          File.open(filename, 'r') do |f|
-            @b2_credentials = Psych.load(f.read).symbolize_keys
-          end
-        end
-        @b2_credentials
+      def b2_credentials
+        @b2_credentials ||= @options.fetch(:b2_credentials)
       end
 
       # Authenticate with Backblaze with the account ID and secret key. This
@@ -81,13 +71,18 @@ module Paperclip
       def login
         return if ::Backblaze::B2.token
         creds = b2_credentials
-        ::Backblaze::B2.login(account_id: creds[:account_id], application_key: creds[:application_key])
+        ::Backblaze::B2.login(
+          account_id: creds.fetch(:account_id),
+          application_key: creds.fetch(:application_key)
+        )
       end
 
       # Return the Backblaze::B2::Bucket object representing the bucket
       # specified by the required options[:b2_bucket].
       def b2_bucket
-        @b2_bucket ||= ::Backblaze::B2::Bucket.get_bucket(name: b2_credentials[:bucket])
+        @b2_bucket ||= ::Backblaze::B2::Bucket.get_bucket(
+          name: b2_credentials.fetch(:bucket)
+        )
       end
 
       # Return the specified bucket name as a String.

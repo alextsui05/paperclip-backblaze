@@ -23,14 +23,6 @@ task :console do
     true
   end
 
-  # Will try to auto load the first .b2_login file it finds
-  success = false
-  Dir['.b2_login*'].each do |file|
-    break if success
-    puts file
-    success = Backblaze::B2.credentials_file(file, raise_errors: false, logging: true)
-  end
-
   ARGV.clear
   Pry.start
 end

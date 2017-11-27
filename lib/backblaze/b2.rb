@@ -2,9 +2,9 @@ require 'backblaze/b2/base'
 require 'backblaze/b2/bucket'
 require 'backblaze/b2/file'
 require 'backblaze/b2/file_version'
-require 'net/http'
 require 'tempfile'
 require 'digest/sha1'
+require 'base64'
 
 module Backblaze::B2
   class << self
@@ -17,19 +17,20 @@ module Backblaze::B2
     # @param [#to_s] application_key the private app key
     # @raise [Backblaze::AuthError] when unable to authenticate
     # @return [void]
-    def login(account_id:, application_key:, api_path: '/b2api/v1/')
-      options = {
+    def login(options)
+      api_path = options.fetch(:api_path) { '/b2api/v1/' }
+
+      params = {
         headers: {
           'Content-Type' => 'application/json',
-          'Accept' => 'application/json'
-        },
-        basic_auth: {
-          username: account_id,
-          password: application_key
+          'Accept' => 'application/json',
+          'Authorization' => bearer(options)
         }
       }
       api_path = "/#{api_path}/".gsub(/\/+/, '/')
-      response = HTTParty.get("https://api.backblazeb2.com#{api_path}b2_authorize_account", options)
+
+      response = HTTParty.get("https://api.backblazeb2.com#{api_path}b2_authorize_account", params)
+
       raise Backblaze::AuthError, response unless response.success?
 
       @account_id = response['accountId']
@@ -42,33 +43,12 @@ module Backblaze::B2
                                   'Content-Type' => 'application/json')
     end
 
-    def credentials_file(filename, raise_errors: true, logging: false)
-      opts = nil
-      open(filename, 'r') do |f|
-        if ::File.extname(filename) == '.json'
-          require 'json'
-          opts = JSON.load(f)
-        else
-          require 'psych'
-          opts = Psych.load(f.read)
-        end
-      end
-      parsed = {}
-      %i[application_key account_id api_path].each do |key|
-        parsed[key] = opts[key.to_s] if opts[key.to_s].is_a? String
-      end
-      if %i[application_key account_id].inject(true) { |status, key| status && !parsed[key].nil? }
-        puts "Attempting #{parsed[:account_id]}" if logging
-        login(parsed)
-        true
-      else
-        puts 'Missing params' if logging
-        false
-      end
-    rescue Psych::SyntaxError, JSON::ParserError => e
-      puts e if logging
-      raise e if raise_errors
-      false
+    def bearer(options)
+      account_id = options.fetch(:account_id)
+      application_key = options.fetch(:application_key)
+      token = Base64.strict_encode64("#{account_id}:#{application_key}")
+
+      "Basic #{token}"
     end
   end
 end

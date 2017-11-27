@@ -53,7 +53,7 @@ Then let Paperclip know about it. You can put it in your environment config:
 ...
 config.paperclip_defaults = {
   storage: :backblaze,
-  b2_credentials: Rails.root.join('config/b2.yml')
+  b2_credentials: YAML.load(ERB.new(File.read("#{Rails.root}/config/b2.yml")).result)[Rails.env]
 }
 ```
 
@@ -71,9 +71,7 @@ Currently, these are required options:
 - `:storage` - This should be set to :backblaze in order to use this
    storage adapter.
 
-- `:b2_credentials` - This should point to a YAML file containing your B2
-   account ID and application key. The contents should look something
-   like `b2.yml` above.
+- `:b2_credentials` - Should be a Hash containing required fields listend in config/b2.yml.
 
 ## Contributing
 
