@@ -89,6 +89,10 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Version Log
 
+### 0.2.1
+
+- CI setup and code style improvements
+
 ### 0.2.0
 
 - Remove `:b2_bucket` option. It should now be specified in the credentials file with a `bucket` key.
