@@ -1,5 +1,7 @@
 # paperclip-backblaze
 
+[![Build Status](https://travis-ci.org/andrewshatnyy/paperclip-backblaze.svg?branch=master)](https://travis-ci.org/andrewshatnyy/paperclip-backblaze)
+
 The `paperclip-backblaze` provides a [Paperclip](https://github.com/thoughtbot/paperclip) storage adapter so that
 attachments can be saved to [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/docs/).
 It makes use of Winston Durand's [backblaze](https://github.com/R167/backblaze) gem
@@ -51,7 +53,7 @@ Then let Paperclip know about it. You can put it in your environment config:
 ...
 config.paperclip_defaults = {
   storage: :backblaze,
-  b2_credentials: Rails.root.join('config/b2.yml')
+  b2_credentials: YAML.load(ERB.new(File.read("#{Rails.root}/config/b2.yml")).result)[Rails.env]
 }
 ```
 
@@ -69,9 +71,7 @@ Currently, these are required options:
 - `:storage` - This should be set to :backblaze in order to use this
    storage adapter.
 
-- `:b2_credentials` - This should point to a YAML file containing your B2
-   account ID and application key. The contents should look something
-   like `b2.yml` above.
+- `:b2_credentials` - Should be a Hash containing required fields listend in config/b2.yml.
 
 ## Contributing
 
