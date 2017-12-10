@@ -1,7 +1,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'paperclip-backblaze'
-  spec.version       = '0.20'
+  spec.version       = '0.2.2'
   spec.authors       = ['Alex Tsui', 'Winston Durand']
   spec.email         = ['alextsui05@gmail.com']
 
