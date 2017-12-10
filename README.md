@@ -53,7 +53,7 @@ Then let Paperclip know about it. You can put it in your environment config:
 ...
 config.paperclip_defaults = {
   storage: :backblaze,
-  b2_credentials: YAML.load(ERB.new(File.read("#{Rails.root}/config/b2.yml")).result)[Rails.env]
+  b2_credentials: YAML.load(ERB.new(File.read("#{Rails.root}/config/b2.yml")).result).with_indifferent_access
 }
 ```
 
