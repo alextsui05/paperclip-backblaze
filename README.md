@@ -1,6 +1,6 @@
 # paperclip-backblaze
 
-[![Build Status](https://travis-ci.org/andrewshatnyy/paperclip-backblaze.svg?branch=master)](https://travis-ci.org/andrewshatnyy/paperclip-backblaze)
+[![Build Status](https://travis-ci.org/alextsui05/paperclip-backblaze.svg?branch=master)](https://travis-ci.org/alextsui05/paperclip-backblaze)
 
 The `paperclip-backblaze` provides a [Paperclip](https://github.com/thoughtbot/paperclip) storage adapter so that
 attachments can be saved to [Backblaze B2 Cloud Storage API](https://www.backblaze.com/b2/docs/).
@@ -53,7 +53,7 @@ Then let Paperclip know about it. You can put it in your environment config:
 ...
 config.paperclip_defaults = {
   storage: :backblaze,
-  b2_credentials: YAML.load(ERB.new(File.read("#{Rails.root}/config/b2.yml")).result)[Rails.env]
+  b2_credentials: YAML.load(ERB.new(File.read("#{Rails.root}/config/b2.yml")).result).with_indifferent_access
 }
 ```
 
@@ -88,6 +88,10 @@ the [Contributor Covenant](contributor-covenant.org) code of conduct.
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
 ## Version Log
+
+### 0.2.1
+
+- CI setup and code style improvements
 
 ### 0.2.0
 

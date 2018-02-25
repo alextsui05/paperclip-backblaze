@@ -1,5 +1,5 @@
 module Paperclip
   module Backblaze
-    VERSION = '0.2.0'.freeze
+    VERSION = '0.2.2'.freeze
   end
 end
