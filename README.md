@@ -100,7 +100,7 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Version Log
 
-### 0.2.3
+### 0.2.2
 
 - Allow default bucket name override
 
