@@ -66,12 +66,23 @@ class Note < ApplicationRecord
   ...
 ```
 
-Currently, these are required options:
+Currently, these are the required options for paperclip:
 
 - `:storage` - This should be set to :backblaze in order to use this
    storage adapter.
 
 - `:b2_credentials` - Should be a Hash containing required fields listend in config/b2.yml.
+
+There is also a way to override the default bucket specified in the config. That can come handy when using a private bucket for specific files.
+
+```.rb
+# app/models/note.rb
+class Note < ApplicationRecord
+  has_attached_file :secret_photo,
+    bucket: 'secret-images',
+    path: '/image/:name.:extension',
+    ....
+```
 
 ## Contributing
 
@@ -88,6 +99,10 @@ the [Contributor Covenant](contributor-covenant.org) code of conduct.
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
 ## Version Log
+
+### 0.2.2
+
+- Allow default bucket name override
 
 ### 0.2.1
 
